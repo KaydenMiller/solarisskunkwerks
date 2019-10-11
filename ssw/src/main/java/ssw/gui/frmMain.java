@@ -76,7 +76,11 @@ import gui.TextPane;
 import javax.swing.SwingUtilities;
 import list.view.tbQuirks;
 
+import ssw.viewmodels.MainViewModel;
+
 public class frmMain extends javax.swing.JFrame implements java.awt.datatransfer.ClipboardOwner, common.DesignForm, ifMechForm {
+    private MainViewModel viewModel = new MainViewModel();
+    
     FocusAdapter spinners = new FocusAdapter() {
         @Override
         public void focusGained(FocusEvent e) {
@@ -5180,6 +5184,7 @@ public class frmMain extends javax.swing.JFrame implements java.awt.datatransfer
         mnuLoad = new javax.swing.JMenuItem();
         mnuOpen = new javax.swing.JMenuItem();
         mnuImport = new javax.swing.JMenu();
+        mnuImportMegaMek = new javax.swing.JMenuItem();
         mnuImportHMP = new javax.swing.JMenuItem();
         mnuBatchHMP = new javax.swing.JMenuItem();
         jSeparator16 = new javax.swing.JSeparator();
@@ -10328,6 +10333,14 @@ public class frmMain extends javax.swing.JFrame implements java.awt.datatransfer
 
         mnuImport.setText("Import Mech...");
 
+        mnuImportMegaMek.setText("MegaMek (mtf)");
+        mnuImportMegaMek.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuImportMegaMekActionPerformed(evt);
+            }
+        });
+        mnuImport.add(mnuImportMegaMek);
+
         mnuImportHMP.setText("from Heavy Metal Pro (HMP)");
         mnuImportHMP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -14940,6 +14953,10 @@ private void btnAddQuirkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     tblQuirks.setModel(new tbQuirks(quirks));
 }//GEN-LAST:event_btnAddQuirkActionPerformed
 
+    private void mnuImportMegaMekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuImportMegaMekActionPerformed
+        this.setMech(viewModel.ImportMechFromMTF(this));
+    }//GEN-LAST:event_mnuImportMegaMekActionPerformed
+
 private void setViewToolbar(boolean Visible)
 {
     tlbIconBar.setVisible(Visible);
@@ -15336,6 +15353,7 @@ private void setViewToolbar(boolean Visible)
     private javax.swing.JMenu mnuHelp;
     private javax.swing.JMenu mnuImport;
     private javax.swing.JMenuItem mnuImportHMP;
+    private javax.swing.JMenuItem mnuImportMegaMek;
     private javax.swing.JMenuItem mnuLoad;
     private javax.swing.JMenuBar mnuMainMenu;
     private javax.swing.JMenuItem mnuNewMech;
