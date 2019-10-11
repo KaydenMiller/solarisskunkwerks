@@ -1,7 +1,9 @@
 package components;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.FileReader;
+import java.net.Inet4Address;
 import java.util.*;
 
 public class MegaMechBattlemech {
@@ -28,7 +30,7 @@ public class MegaMechBattlemech {
     public Map<String, Integer> armor = new HashMap<String, Integer>();
 
     public int weaponCount;
-    public Map<String, String> weaponAndLocation = new HashMap<String, String>();
+    public Map<String, List<String>> weaponAndLocation;
 
     public String[] head = new String[12];
     public String[] leftArm = new String[12];
@@ -85,16 +87,49 @@ public class MegaMechBattlemech {
         String strJump = GetValueFromKvP(lines, "Jump MP");
         mech.jumpMp = Integer.parseInt(strJump != null ? strJump : "-1");
 
+        mech.armorType = GetValueFromKvP(lines, "Armor");
+        mech.armor.put("HD", Integer.valueOf(GetValueFromKvP(lines, "HD Armor")));
+        mech.armor.put("LA", Integer.valueOf(GetValueFromKvP(lines, "LA Armor")));
+        mech.armor.put("RA", Integer.valueOf(GetValueFromKvP(lines, "RA Armor")));
+        mech.armor.put("LT", Integer.valueOf(GetValueFromKvP(lines, "LT Armor")));
+        mech.armor.put("RT", Integer.valueOf(GetValueFromKvP(lines, "RT Armor")));
+        mech.armor.put("CT", Integer.valueOf(GetValueFromKvP(lines, "CT Armor")));
+        mech.armor.put("LL", Integer.valueOf(GetValueFromKvP(lines, "LL Armor")));
+        mech.armor.put("RL", Integer.valueOf(GetValueFromKvP(lines, "RL Armor")));
+        mech.armor.put("RLT", Integer.valueOf(GetValueFromKvP(lines, "RTL Armor")));
+        mech.armor.put("RCT", Integer.valueOf(GetValueFromKvP(lines, "RTC Armor")));
+        mech.armor.put("RRT", Integer.valueOf(GetValueFromKvP(lines, "RTR Armor")));
+
+        mech.weaponCount = Integer.valueOf(GetValueFromKvP(lines, "Weapons"));
+        mech.weaponAndLocation = GetWeaponComponentArray(lines, mech.weaponCount);
+
+        mech.leftArm = GetComponentArray(lines, "Right Arm:");
+        mech.rightArm = GetComponentArray(lines, "Left Arm:");
+        mech.leftTorso = GetComponentArray(lines, "Left Torso:");
+        mech.rightTorso = GetComponentArray(lines, "Right Torso:");
+        mech.centerTorso = GetComponentArray(lines, "Center Torso:");
+        mech.leftLeg = GetComponentArray(lines, "Left Leg:");
+        mech.rightLeg = GetComponentArray(lines, "Right Leg:");
+        mech.head = GetComponentArray(lines, "Head:");
+
         return mech;
     }
 
     private static String GetValueFromKvP(List<String> lines, String key) {
         for (String line : lines) {
-            if (line.toLowerCase().contains(key)) {
+            if (line.toLowerCase().contains(key.toLowerCase())) {
                 int valueStart = line.indexOf(":");
-                int endOfLine = line.indexOf('\n');
+                int endOfLine = line.length();
 
-                String value = line.substring(valueStart + 1, endOfLine - 1);
+                String value;
+                try {
+                    value = line.substring(valueStart + 1, endOfLine);
+                }
+                catch (Exception ex) {
+                    System.err.format("Exception occurred trying to get KVP value from MegaMek file.");
+                    value = "";
+                }
+
                 return value;
             }
         }
@@ -102,8 +137,56 @@ public class MegaMechBattlemech {
         return null;
     }
 
+    private static HashMap<String, List<String>> GetWeaponComponentArray(List<String> lines, int weaponCount) {
+        HashMap<String, List<String>> weapons = new HashMap<String, List<String>>();
+
+        int arrayKeyIndex = GetIndexOfKey(lines, "Weapons");
+        int fileLineStart = arrayKeyIndex + 1;
+
+        for (int i = fileLineStart; i < fileLineStart + weaponCount; i++) {
+            String[] values = lines.get(i).split(",");
+
+            if (weapons.containsKey(values[1])) {
+                weapons.get(values[1]).add(values[0]);
+            }
+            else {
+                weapons.put(values[1], new ArrayList<>());
+                weapons.get(values[1]).add(values[0]);
+            }
+        }
+
+        return weapons;
+    }
+
+    private static String[] GetComponentArray(List<String> lines, String arrayKey) {
+        String[] components = new String[12];
+
+        int arrayKeyIndex = GetIndexOfKey(lines, arrayKey);
+        int fileLineStart = arrayKeyIndex + 1;
+
+        for (int i = fileLineStart; i < fileLineStart + 12; i++) {
+            components[i - fileLineStart] = lines.get(i);
+        }
+
+        return components;
+    }
+
     private static String GetValueFromFileRow(List<String> lines, int row) {
         return lines.get(row);
+    }
+
+    private static int GetIndexOfKey(List<String> lines, String key) {
+        int index = 0;
+
+        for (String line : lines) {
+            if (line.toLowerCase().contains(key.toLowerCase())) {
+                return index;
+            }
+
+            ++index;
+        }
+
+        return -1;
     }
 
     private static List<String> LoadFile(String filePath) {
@@ -119,7 +202,7 @@ public class MegaMechBattlemech {
             return lines;
         }
         catch (Exception ex) {
-            System.err.format("Exception occurred trying to load MegaMech file: %s", filePath);
+            System.err.format("Exception occurred trying to load MegaMek file: %s", filePath);
             ex.printStackTrace();
             return lines;
         }
