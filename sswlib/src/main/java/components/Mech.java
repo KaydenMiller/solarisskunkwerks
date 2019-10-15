@@ -1734,6 +1734,7 @@ public class Mech implements ifUnit, ifBattleforce {
         }
     }
 
+
     public int GetBaseRulesLevel() {
         return MainLoadout.GetRulesLevel();
     }

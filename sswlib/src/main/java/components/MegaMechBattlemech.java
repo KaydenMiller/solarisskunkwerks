@@ -17,7 +17,7 @@ public class MegaMechBattlemech {
     public String source;
     public int rulesLevel;
 
-    public float mass;
+    public int mass;
     public String engine;
     public String structure;
     public String myomer;
@@ -76,7 +76,7 @@ public class MegaMechBattlemech {
         mech.rulesLevel = Integer.parseInt(strRules != null ? strRules : "-1");
 
         String strMass = GetValueFromKvP(lines, "Mass");
-        mech.mass = Float.parseFloat(strMass != null ? strMass : "-1");
+        mech.mass = Integer.parseInt(strMass != null ? strMass : "-1");
         mech.engine = GetValueFromKvP(lines, "Engine");
         mech.structure = GetValueFromKvP(lines, "Structure");
         mech.myomer = GetValueFromKvP(lines, "Myomer");
